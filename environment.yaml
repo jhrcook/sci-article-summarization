@@ -1,0 +1,18 @@
+name: sci-article-summarization
+channels:
+  - huggingface
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - black
+  - flake8
+  - huggingface_hub=0.0.*
+  - isort
+  - mypy=0.*
+  - pycodestyle
+  - python=3.9.7
+  - pytorch=1.10.*
+  - summa=3.0.*
+  - torchvision=0.11.*
+  - transformers=4.11.*
