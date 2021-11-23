@@ -9,6 +9,14 @@ repos:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+    -   id: no-commit-to-branch
+        args: [--branch, main, --branch, master]
+
+-   repo: https://github.com/PyCQA/isort
+    rev: '5.10.1'
+    hooks:
+    -   id: isort
+        args: [--profile=black]
 
 -   repo: https://github.com/psf/black
     rev: '19.3b0'
@@ -19,6 +27,7 @@ repos:
     rev: 'v0.910-1'
     hooks:
     -   id: mypy
+        additional_dependencies: [pydantic, types-PyYAML, types-python-dateutil]
 
 -   repo: https://github.com/PyCQA/pydocstyle
     rev: '6.1.1'
