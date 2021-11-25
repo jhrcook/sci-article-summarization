@@ -1,9 +1,18 @@
 """Summarize text using the PageRank method."""
 
+from typing import Any
+
+from pydantic import BaseModel
 from summa import summarizer
 
 
-def summarize(text: str, ratio: float = 0.2) -> str:
+class PageRankSummarizationConfiguration(BaseModel):
+    """PageRank configuration parameters."""
+
+    ratio: float = 0.2
+
+
+def summarize(text: str, config_kwargs: dict[str, Any]) -> str:
     """Summarize text using the PageRank method.
 
     Args:
@@ -14,6 +23,7 @@ def summarize(text: str, ratio: float = 0.2) -> str:
     Returns:
         str: Summary of the input text.
     """
-    text_sum = summarizer.summarize(text, ratio=ratio)
+    config = PageRankSummarizationConfiguration(**config_kwargs)
+    text_sum = summarizer.summarize(text, ratio=config.ratio)
     assert isinstance(text_sum, str), "Unexpected return type from summa library."
     return text_sum
