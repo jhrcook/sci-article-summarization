@@ -14,6 +14,11 @@ class BartSummarizationConfiguration(BaseModel):
     do_sample: bool = False
 
 
+def _extract_summary(bart_res: Any) -> str:
+    assert len(bart_res) == 1
+    return bart_res[0]["summary_text"].strip()
+
+
 def summarize(text: str, config_kwargs: dict[str, Any]) -> str:
     """Summarize text with BART (from HuggingFace).
 
@@ -35,9 +40,4 @@ def summarize(text: str, config_kwargs: dict[str, Any]) -> str:
         min_length=config.min_length,
         do_sample=config.do_sample,
     )
-
-    if (text_sum := res.get("summary_text")) is None:
-        print(res)
-        raise BaseException("BART failed unexpectedly.")
-
-    return text_sum
+    return _extract_summary(res)
