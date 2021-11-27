@@ -1,6 +1,6 @@
 """Get and parse an online scientific article."""
-
 import pickle
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -57,6 +57,13 @@ def _remove_figures(soup: BeautifulSoup) -> None:
     fig_class = "c-article-section__figure js-c-reading-companion-figures-item"
     for div in soup.find_all(class_=fig_class):
         div.decompose()
+    return None
+
+
+def _remove_citations(soup: BeautifulSoup) -> None:
+    for ref in soup.find_all(id=re.compile("ref-link-section")):
+        ref.decompose()
+    return None
 
 
 def _extract_section_title(article_section: element.Tag) -> str:
@@ -87,6 +94,7 @@ def parse_article(res: requests.Response) -> parsed_article:
 
     soup = BeautifulSoup(res.content, "html.parser")
     _remove_figures(soup)
+    _remove_citations(soup)
     article_sections = soup.find_all(class_="c-article-section")
     sections_dict: parsed_article = {}
     for section in article_sections:
@@ -110,8 +118,3 @@ def get_and_parse_article(url: str) -> parsed_article:
     response = get_webpage(url=url)
     article = parse_article(response)
     return article
-
-
-# Results subheading
-# <h3 class="c-article__sub-heading" id="Sec3">
-# <i>KRAS</i> alleles are non-uniformly distributed across cancers</h3>
