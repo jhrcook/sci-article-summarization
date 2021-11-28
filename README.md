@@ -16,3 +16,9 @@ HuggingFace summarization pipeline: https://huggingface.co/transformers/task_sum
 OpenAI examples (search "summ"): https://beta.openai.com/examples
 
 textrank from 'summa' library: https://github.com/summanlp/textrank
+
+## Model parameters
+
+### GPT-3
+
+information on GPT-3 completion API: https://beta.openai.com/docs/api-reference/completions/create

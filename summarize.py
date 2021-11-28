@@ -3,14 +3,19 @@
 """Entrypoint to summarization functions."""
 
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Final, Optional
 
 from dotenv import load_dotenv
 from typer import Typer
 
+from src.bart_summarization import BartSummarizationConfiguration
 from src.bart_summarization import summarize as bart_summarize
-from src.gtp3_summarization import summarize as gpt3_summarize
+from src.gpt3_summarization import Gpt3SummarizationConfiguration
+from src.gpt3_summarization import summarize as gpt3_summarize
 from src.pagerank_summarization import summarize as pagerange_summarize
+from src.parse_scientific_article import get_and_parse_article, parsed_article
+
+URL: Final[str] = "https://www.nature.com/articles/s41467-021-22125-z"
 
 load_dotenv()
 
@@ -34,96 +39,116 @@ summarization_callables: dict[SummarizationMethod, summarization_callable] = {
 }
 
 
-def summarize(
-    method: SummarizationMethod, text: str, **kwargs: Optional[dict[str, Any]]
-) -> str:
-    """Summarize text with a specific method.
+def _pre_summary_message(method: SummarizationMethod) -> None:
+    method_msg = f"Summarization method: '{method.value}'"
+    print(method_msg)
+    print("=" * len(method_msg))
+    return None
+
+
+def _pre_section_message(name: str) -> None:
+    print("\n" + name)
+    print("-" * len(name))
+    return None
+
+
+@app.command()
+def parse_article(url: str = URL) -> dict[str, list[str]]:
+    """CLI to parse an article's webpage.
 
     Args:
-        method (SummarizationMethod): Summarization method.
-        text (str): Text to summarize.
-
-    Raises:
-        NotImplementedError: Method not yet implemented.
+        url (str, optional): URL to an article's webpage. Defaults to URL.
 
     Returns:
-        str: Summary.
+        dict[str, list[str]]: Parsed article.
     """
+    return get_and_parse_article(url=url)
+
+
+def _word_count(x: str) -> int:
+    return len(x.split(" "))
+
+
+def _get_best_configuration_kwargs(
+    method: SummarizationMethod, text: str
+) -> dict[str, Any]:
+    n_words = _word_count(text)
+    if method is SummarizationMethod.BART:
+        config = BartSummarizationConfiguration(
+            max_length=int(n_words * 0.2), min_length=int(n_words * 0.05)
+        )
+        return config.dict()
+    elif method is SummarizationMethod.GPT3:
+        config = Gpt3SummarizationConfiguration(max_tokens=(n_words * 0.15))
+        return config.dict()
+    else:
+        return {}
+
+
+def _summarize(
+    method: SummarizationMethod, text: str, kwargs: Optional[dict[str, Any]] = None
+) -> str:
     fxn = summarization_callables.get(method)
+    if kwargs is None:
+        kwargs = {}
     if fxn is None:
         raise NotImplementedError(method.value)
     return fxn(text, kwargs)
 
 
-test_text = """
-Located at a critical signaling junction between extracellular growth receptors and
-pro-growth pathways, KRAS is one of the most commonly mutated genes in cancer1,2.
-However, it is frequently mutated in only a handful of cancers, with the highest
-frequencies in colorectal adenocarcinoma (COAD), lung adenocarcinoma (LUAD), multiple
-myeloma (MM), and pancreatic adenocarcinoma (PAAD). Importantly, the activating alleles
-found in KRAS vary substantially across cancers, indicating possible differences in
-signaling behavior of the mutant proteins that exploit the environment of the specific
-cellular context3,4. When mutated at one of its four hotspot codons—12, 13, 61, or
-146—activated KRAS protein hyperactivates many downstream effector pathways, such as the
-MAPK and PI3K-AKT signaling pathways1. Previous studies have documented substantial
-differences in the biochemical and signaling properties of the common KRAS variants
-(reviewed by Miller et al.5 and Li et al.6). KRAS normally operates as a molecular
-switch, activating downstream pathways when GTP-bound, but inactive when GDP-bound
-following the hydrolysis of the 𝛾-phosphate. This reaction is catalyzed by GTPase-
-activating proteins (GAPs), while the exchange of the GDP for a new GTP is facilitated
-by guanine nucleotide exchange factors (GEFs)7. Activating KRAS mutations result in
-elevated engagement of downstream pathways by increasing the steady-state levels of
-GTP-bound KRAS. Specifically, mutations to codons 12, 13, and 61 reduce the rate of
-intrinsic and/or GAP-mediated hydrolysis, and mutations at 13 and 61, but not 12, also
-enhance the rate of nucleotide exchange8,9. Alternatively, 146 mutations do not alter
-the rate of GTP hydrolysis, but cause hyperactivation through an increased rate of GDP
-exchange4,10,11,12. Additional biochemical, structural, and signaling distinctions have
-been identified between different mutant alleles, including between those at the same
-amino acid position4,8,13,14,15,16,17,18,19,20. Likely as a consequence of their
-distinct properties, associations have been uncovered between the specific KRAS mutation
-status and therapeutic responses and clinical outcomes of cancer patients3,6. For
-instance, a retrospective meta-analysis suggested that COAD tumors with a KRAS G13D
-allele were sensitive to anti-EGFR therapies, a treatment generally discouraged for
-KRAS-mutant tumors21. It has recently been proposed, via computational and experimental
-means, that differential interaction kinetics between KRAS G13D and the Ras GAP NF-1
-explain this effect22,23,24. Another example is that the KRAS G12D allele is associated
-with worse overall survival in advanced PAAD, when compared to patients with WT KRAS,
-KRAS G12R, or KRAS G12V25. Thus far, the hypothesis has been that the different
-biological properties of the mutant KRAS alleles are the cause of these clinical
-distinctions. However, it is also possible that allele-specific genetic interactions
-drive the varying clinical outcomes. Understanding the heterogeneous properties of the
-KRAS alleles is essential to effectively treating KRAS-driven cancers. Here, we study
-the origins of KRAS mutations to assess the extent to which tissue-specific mutational
-processes determined the allelic distribution. We then construct comutation networks for
-each KRAS allele to identify different properties of the alleles. Finally, we analyze
-allele-specific genetic dependencies to explore potential therapeutic targets. Our
-analysis demonstrates that an allele-specific and tissue-specific analysis is necessary
-to fully understand the nature of the most potent oncogenes.
-"""
+KEEP_SECTIONS = ["Introduction", "Results", "Discussion", "Results and discussion"]
 
 
-def _pre_summary_message(method: SummarizationMethod) -> None:
-    method_msg = f"Summarization method: '{method.value}'"
-    print(method_msg)
-    print("-" * len(method_msg))
-    return None
+def _preprocess_article(article: parsed_article, max_len: int = -1) -> parsed_article:
+    # Filter for only certain sections.
+    new_article = {k: t for k, t in article.items() if k in KEEP_SECTIONS}
+    # Merge shorter paragraphs.
+    for title, paragraphs in new_article.items():
+        merged_p = ""
+        new_ps: list[str] = []
+        for p in paragraphs:
+            if max_len < 0 or _word_count(merged_p + " " + p) < max_len:
+                merged_p += " " + p
+            else:
+                new_ps.append(merged_p)
+                merged_p = p
+        if len(merged_p) > 0:
+            new_ps.append(merged_p)
+        new_article[title] = new_ps
+    return new_article
 
 
-def _get_test_text() -> str:
-    full_text = ""
-    for line in test_text.splitlines():
-        full_text += " " + line.strip()
-    return full_text
+summarization_method_max_lengths: Final[dict[SummarizationMethod, int]] = {
+    SummarizationMethod.BART: 650,
+    SummarizationMethod.GPT3: 1200,
+}
+
+
+def _print_article(article: parsed_article) -> None:
+    for title, text in article.items():
+        print(f"{title}: {len(text)} ({[_word_count(t) for t in text]})")
 
 
 @app.command()
-def main() -> None:
-    """Run the summarization methods."""
-    text = _get_test_text()
-    for method in SummarizationMethod:
+def summarize(url: str) -> None:
+    """Summarize an article from its webpage.
+
+    Args:
+        url (str): URL to the article's webpage.
+    """
+    for method in SummarizationMethod:  # [SummarizationMethod.GPT3]:
+        max_len = summarization_method_max_lengths.get(method, -1)
+        article = _preprocess_article(parse_article(url), max_len=max_len)
+        _print_article(article)
         _pre_summary_message(method)
-        res = summarize(method=method, text=text)
-        print(res)
+        for title, paragraphs in article.items():
+            _pre_section_message(title)
+            for paragraph in paragraphs:
+                config_kwargs = _get_best_configuration_kwargs(method, paragraph)
+                res = _summarize(method=method, text=paragraph, kwargs=config_kwargs)
+                res = res.strip()
+                if len(res) > 0:
+                    print(res)
         print("-" * 80 + "\n")
     return None
 

@@ -15,10 +15,10 @@ class Gpt3SummarizationConfiguration(BaseModel):
 
     engine: OpenaiGpt3Engine = "davinci"
     temperature: PositiveFloat = 0.3
-    max_tokens: PositiveInt = 60
+    max_tokens: PositiveInt = 150
     top_p: PositiveFloat = 1.0
-    frequency_penalty: float = 0.0
-    presence_penalty: float = 0.0
+    frequency_penalty: float = 0.1
+    presence_penalty: float = 0.1
 
 
 def _openai_api_key() -> None:
