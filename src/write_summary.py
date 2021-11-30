@@ -37,11 +37,11 @@ def write_summary(article: SummarizedScientificArticle, to: Path) -> None:
         article (SummarizedScientificArticle): Summarized article.
         to (Path): File path.
     """
-    text = "# " + article.title + "\n"
+    text = "# " + article.title + "\n\n"
     text += "summarization method: " + article.config.method.value + "\n\n"
     for section_title, paragraphs in article.summary.items():
         text += "## " + section_title + "\n\n"
-        text += "\n".join(paragraphs) + "\n"
+        text += "\n".join(paragraphs) + "\n\n"
     with open(to, "w") as file:
         file.write(text)
     return None

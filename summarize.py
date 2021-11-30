@@ -3,7 +3,7 @@
 """Entrypoint to summarization functions."""
 
 from pathlib import Path
-from typing import Optional
+from typing import Final, Optional, Union
 
 from dotenv import load_dotenv
 from typer import Typer
@@ -44,11 +44,12 @@ def summarize_all() -> None:
 
 
 @app.command()
-def summarize(
+def summarize(  # type: ignore
     url: str,
     method: SummarizationMethod,
     progress_bar: bool = True,
     output: Optional[Path] = None,
+    **kwargs,
 ) -> None:
     """Summarize an online scientific article.
 
@@ -58,7 +59,7 @@ def summarize(
     article = get_and_parse_article(url=url)
     summarized_article = summarize_article(
         article,
-        config=SummarizationConfiguration(method=method),
+        config=SummarizationConfiguration(method=method, config_kwargs=kwargs),
         progress_bar=progress_bar,
     )
 
@@ -69,17 +70,50 @@ def summarize(
     return None
 
 
+KRAS_ALLELES_URL: Final[str] = "https://www.nature.com/articles/s41467-021-22125-z"
+
+
 @app.command()
-def parse_article(name: str, url: str) -> ScientificArticle:
+def make_examples() -> None:
+    """Generate the example summarization results."""
+    out_dir = Path("examples")
+    if not out_dir.exists():
+        out_dir.mkdir()
+
+    configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
+        SummarizationMethod.TEXTRANK: {"ratio": 0.2},
+        SummarizationMethod.BART: {},
+        SummarizationMethod.GPT3: {
+            "temperature": 0.1,
+            "frequency_penalty": 0.1,
+            "presence_penalty": 0.1,
+        },
+    }
+
+    for method, kwargs in configs.items():
+        print(f"Summarizing with {method.value}")
+        out_file = out_dir / f"kras-alleles-summary_{method.value}.md"
+        summarize(
+            KRAS_ALLELES_URL,
+            method=method,
+            progress_bar=True,
+            output=out_file,
+            **kwargs,
+        )
+        print(f"Results written to '{str(out_file)}'")
+    return None
+
+
+@app.command()
+def parse_article(url: str) -> None:
     """CLI entrypoint to parse an article's webpage.
 
     Args:
         url (str): URL to an article's webpage.
-
-    Returns:
-        dict[str, list[str]]: Parsed article.
     """
-    return get_and_parse_article(name=name, url=url)
+    article = get_and_parse_article(url=url)
+    print(article)
+    return None
 
 
 if __name__ == "__main__":

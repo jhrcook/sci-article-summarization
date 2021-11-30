@@ -6,14 +6,11 @@ from typing import Any, Callable, Final, Iterable, Optional, Union
 from pydantic.main import BaseModel
 from tqdm import tqdm
 
-from src.bart_summarization import BartSummarizationConfiguration
 from src.bart_summarization import summarize as bart_summarize
-from src.gpt3_summarization import Gpt3SummarizationConfiguration
 from src.gpt3_summarization import summarize as gpt3_summarize
-
-# from src.pagerank_summarization import PageRankSummarizationConfiguration
 from src.pagerank_summarization import summarize as pagerange_summarize
 from src.parse_scientific_article import ScientificArticle, article_type
+from src.text_utils import word_count
 
 
 class SummarizationMethod(Enum):
@@ -24,32 +21,8 @@ class SummarizationMethod(Enum):
     GPT3 = "GPT3"
 
 
-def _word_count(x: str) -> int:
-    return len(x.split(" "))
-
-
 def _total_word_count(paragraphs: Iterable[Iterable[str]]) -> int:
-    return sum(([sum([_word_count(p) for p in ps]) for ps in paragraphs]))
-
-
-# TODO: change the following function so that it augments a configuration instead of
-# returning a novel one.
-
-
-def _get_best_configuration_kwargs(
-    method: SummarizationMethod, text: str
-) -> dict[str, Any]:
-    n_words = _word_count(text)
-    if method is SummarizationMethod.BART:
-        config = BartSummarizationConfiguration(
-            max_length=int(n_words * 0.2), min_length=int(n_words * 0.05)
-        )
-        return config.dict()
-    elif method is SummarizationMethod.GPT3:
-        config = Gpt3SummarizationConfiguration(max_tokens=(n_words * 0.15))
-        return config.dict()
-    else:
-        return {}
+    return sum(([sum([word_count(p) for p in ps]) for ps in paragraphs]))
 
 
 summarization_callable = Callable[[str, dict[str, Any]], str]
@@ -83,7 +56,7 @@ def _preprocess_article(article: article_type, max_len: int = -1) -> article_typ
         merged_p = ""
         new_ps: list[str] = []
         for p in paragraphs:
-            if max_len < 0 or _word_count(merged_p + " " + p) < max_len:
+            if max_len < 0 or word_count(merged_p + " " + p) < max_len:
                 merged_p += " " + p
             else:
                 new_ps.append(merged_p)
@@ -96,7 +69,7 @@ def _preprocess_article(article: article_type, max_len: int = -1) -> article_typ
 
 summarization_method_max_lengths: Final[dict[SummarizationMethod, int]] = {
     SummarizationMethod.BART: 650,
-    SummarizationMethod.GPT3: 1200,
+    SummarizationMethod.GPT3: 650,
 }
 
 
@@ -183,9 +156,8 @@ def summarize_article(
     for title, paragraphs in article_text.items():
         summarized_paragraphs: list[str] = []
         for paragraph in paragraphs:
-            # config_kwargs = _get_best_configuration_kwargs(method, paragraph)
             res = _summarize(method=method, text=paragraph, kwargs=config.config_kwargs)
-            pbar.update(_word_count(paragraph))
+            pbar.update(word_count(paragraph))
             res = res.strip()
             if len(res) > 0:
                 summarized_paragraphs.append(res)
