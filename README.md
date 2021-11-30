@@ -16,6 +16,24 @@ My next step is to create a structured method for saving the results for easy co
 I will run multiple articles through the methods with various parameters for the models.
 I may also standardize the system/API for getting a parsed article so that I can create parsing systems for multiple journals (though this is a low priority).
 
+## Example uses
+
+### Summarizing a single scientific article
+
+Here is an example of using the CLI to summarize a single article.
+
+```bash
+./summarize.py summarize "https://www.nature.com/articles/s41467-021-22125-z" "TEXTRANK"
+#> 'The origins and genetic interactions of KRAS mutations are allele- and tissue-specific'
+#>   summarization method: TEXTRANK
+#> ========================================================================================
+#>
+#> Introduction
+#> ------------
+#> Importantly, the activating alleles found in KRAS vary ...
+#> ...
+```
+
 ## To-Do
 
 - look into different options from HuggingFace (more info [here](https://huggingface.co/transformers/task_summary.html#summarization))

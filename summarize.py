@@ -29,7 +29,7 @@ def summarize_all() -> None:
     methods and configurations.
     """
     articles: list[ScientificArticle] = [
-        get_and_parse_article(name, url) for name, url in get_urls().items()
+        get_and_parse_article(url) for url in get_urls()
     ]
     summarized_articles: list[SummarizedScientificArticle] = []
     for summ_config in generate_configurations():
@@ -41,14 +41,13 @@ def summarize_all() -> None:
 
 
 @app.command()
-def summarize(name: str, url: str, method: SummarizationMethod) -> None:
+def summarize(url: str, method: SummarizationMethod) -> None:
     """Summarize an online scientific article.
 
     Args:
-        name (str): Name of the article.
         url (str): URL of the webpage.
     """
-    article = get_and_parse_article(name, url)
+    article = get_and_parse_article(url=url)
     summarized_article = summarize_article(
         article, config=SummarizationConfiguration(method=method)
     )

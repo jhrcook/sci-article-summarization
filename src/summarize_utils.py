@@ -96,15 +96,13 @@ summarization_method_max_lengths: Final[dict[SummarizationMethod, int]] = {
 }
 
 
-def get_urls() -> dict[str, str]:
+def get_urls() -> set[str]:
     """Get the URLs for the articles to summarize.
 
     Returns:
-        dict[str, str]: Set of URLs.
+        set[str]: Set of URLs.
     """
-    return {
-        "kras-alleles": "https://www.nature.com/articles/s41467-021-22125-z",
-    }
+    return {"https://www.nature.com/articles/s41467-021-22125-z"}
 
 
 class SummarizationConfiguration(BaseModel):
