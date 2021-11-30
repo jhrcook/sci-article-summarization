@@ -24,19 +24,6 @@ class SummarizationMethod(Enum):
     GPT3 = "GPT3"
 
 
-def _pre_summary_message(method: SummarizationMethod) -> None:
-    method_msg = f"Summarization method: '{method.value}'"
-    print(method_msg)
-    print("=" * len(method_msg))
-    return None
-
-
-def _pre_section_message(name: str) -> None:
-    print("\n" + name)
-    print("-" * len(name))
-    return None
-
-
 def _word_count(x: str) -> int:
     return len(x.split(" "))
 
@@ -166,10 +153,8 @@ def summarize_article(
     method = config.method
     max_len = summarization_method_max_lengths.get(config.method, -1)
     article_text = _preprocess_article(article.text.copy(), max_len=max_len)
-    # _pre_summary_message(method)
     summary_dict: article_type = {}
     for title, paragraphs in article_text.items():
-        # _pre_section_message(title)
         summarized_paragraphs: list[str] = []
         for paragraph in paragraphs:
             # config_kwargs = _get_best_configuration_kwargs(method, paragraph)

@@ -7,11 +7,14 @@ from typer import Typer
 
 from src.parse_scientific_article import ScientificArticle, get_and_parse_article
 from src.summarize_utils import (
+    SummarizationConfiguration,
+    SummarizationMethod,
     SummarizedScientificArticle,
     generate_configurations,
     get_urls,
     summarize_article,
 )
+from src.write_summary import print_summary
 
 load_dotenv()
 
@@ -19,7 +22,7 @@ app = Typer()
 
 
 @app.command()
-def summarize() -> None:
+def summarize_all() -> None:
     """Run the summarization pipeline to summarize a series of articles.
 
     Run the summarization pipeline to summarize a series of articles using different
@@ -34,6 +37,22 @@ def summarize() -> None:
             summarized_article = summarize_article(article, config=summ_config)
             summarized_articles.append(summarized_article)
     print(f"number of summarized articles: {len(summarized_articles)}")
+    return None
+
+
+@app.command()
+def summarize(name: str, url: str, method: SummarizationMethod) -> None:
+    """Summarize an online scientific article.
+
+    Args:
+        name (str): Name of the article.
+        url (str): URL of the webpage.
+    """
+    article = get_and_parse_article(name, url)
+    summarized_article = summarize_article(
+        article, config=SummarizationConfiguration(method=method)
+    )
+    print_summary(summarized_article)
     return None
 
 
