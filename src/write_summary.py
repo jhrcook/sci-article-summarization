@@ -1,6 +1,7 @@
 """Writing summarized articles to file."""
 
 from pathlib import Path
+from typing import Optional
 
 from colorama import Fore, Style, init
 
@@ -9,16 +10,41 @@ from src.summarize_utils import SummarizationMethod, SummarizedScientificArticle
 init(autoreset=True)
 
 
-def _make_summary_file_name(article: SummarizedScientificArticle) -> str:
-    ...
+def make_summary_file_name(
+    article: SummarizedScientificArticle, suffix: Optional[str] = ".md"
+) -> str:
+    """Make a file name for a summaried article.
+
+    Args:
+        article (SummarizedScientificArticle): Summarized article.
+        suffix (Optional[str], optional): File suffix. Defaults to ".md".
+
+    Returns:
+        str: Custom file name based off of the article and summarization config.
+    """
+    fname: str = article.title.replace(" ", "-") + "_" + article.config.method.value
+    if (kwargs := article.config.config_kwargs) is not None and len(kwargs) > 0:
+        fname += "_".join([f"{k}-{v}" for k, v in kwargs.items()])
+    if suffix is not None:
+        fname += suffix
+    return fname
 
 
-def write_summary(article: SummarizedScientificArticle, to_dir: Path) -> None:
+def write_summary(article: SummarizedScientificArticle, to: Path) -> None:
     """Write a summary to file.
 
-    TODO: implement
+    Args:
+        article (SummarizedScientificArticle): Summarized article.
+        to (Path): File path.
     """
-    ...
+    text = "# " + article.title + "\n"
+    text += "summarization method: " + article.config.method.value + "\n\n"
+    for section_title, paragraphs in article.summary.items():
+        text += "## " + section_title + "\n\n"
+        text += "\n".join(paragraphs) + "\n"
+    with open(to, "w") as file:
+        file.write(text)
+    return None
 
 
 def _pre_summary_message(name: str, method: SummarizationMethod) -> None:

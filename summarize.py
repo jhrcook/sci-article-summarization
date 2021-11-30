@@ -2,6 +2,9 @@
 
 """Entrypoint to summarization functions."""
 
+from pathlib import Path
+from typing import Optional
+
 from dotenv import load_dotenv
 from typer import Typer
 
@@ -14,7 +17,7 @@ from src.summarize_utils import (
     get_urls,
     summarize_article,
 )
-from src.write_summary import print_summary
+from src.write_summary import print_summary, write_summary
 
 load_dotenv()
 
@@ -41,7 +44,12 @@ def summarize_all() -> None:
 
 
 @app.command()
-def summarize(url: str, method: SummarizationMethod, progress_bar: bool = True) -> None:
+def summarize(
+    url: str,
+    method: SummarizationMethod,
+    progress_bar: bool = True,
+    output: Optional[Path] = None,
+) -> None:
     """Summarize an online scientific article.
 
     Args:
@@ -53,7 +61,11 @@ def summarize(url: str, method: SummarizationMethod, progress_bar: bool = True) 
         config=SummarizationConfiguration(method=method),
         progress_bar=progress_bar,
     )
-    print_summary(summarized_article)
+
+    if output is not None:
+        write_summary(summarized_article, output)
+    else:
+        print_summary(summarized_article)
     return None
 
 

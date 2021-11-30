@@ -1,7 +1,7 @@
 """Utilities for the main summarization script."""
 
 from enum import Enum
-from typing import Any, Callable, Final, Optional, Union
+from typing import Any, Callable, Final, Iterable, Optional, Union
 
 from pydantic.main import BaseModel
 from tqdm import tqdm
@@ -26,6 +26,10 @@ class SummarizationMethod(Enum):
 
 def _word_count(x: str) -> int:
     return len(x.split(" "))
+
+
+def _total_word_count(paragraphs: Iterable[Iterable[str]]) -> int:
+    return sum(([sum([_word_count(p) for p in ps]) for ps in paragraphs]))
 
 
 # TODO: change the following function so that it augments a configuration instead of
@@ -171,9 +175,7 @@ def summarize_article(
     article_text = _preprocess_article(article.text.copy(), max_len=max_len)
     summary_dict: article_type = {}
     if progress_bar:
-        total_article_length = sum(
-            ([sum([len(p) for p in ps]) for ps in article_text.values()])
-        )
+        total_article_length = _total_word_count(article_text.values())
         pbar = tqdm(total=total_article_length)
     else:
         pbar = MockProgressBar()
@@ -183,7 +185,7 @@ def summarize_article(
         for paragraph in paragraphs:
             # config_kwargs = _get_best_configuration_kwargs(method, paragraph)
             res = _summarize(method=method, text=paragraph, kwargs=config.config_kwargs)
-            pbar.update(len(paragraph))
+            pbar.update(_word_count(paragraph))
             res = res.strip()
             if len(res) > 0:
                 summarized_paragraphs.append(res)
