@@ -34,6 +34,11 @@ Here is an example of using the CLI to summarize a single article.
 #> ...
 ```
 
+## Setup
+
+- create conda environment
+- make `.env` file with OpenAI key
+
 ## To-Do
 
 - look into different options from HuggingFace (more info [here](https://huggingface.co/transformers/task_summary.html#summarization))

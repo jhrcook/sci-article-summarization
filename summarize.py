@@ -41,7 +41,7 @@ def summarize_all() -> None:
 
 
 @app.command()
-def summarize(url: str, method: SummarizationMethod) -> None:
+def summarize(url: str, method: SummarizationMethod, progress_bar: bool = True) -> None:
     """Summarize an online scientific article.
 
     Args:
@@ -49,7 +49,9 @@ def summarize(url: str, method: SummarizationMethod) -> None:
     """
     article = get_and_parse_article(url=url)
     summarized_article = summarize_article(
-        article, config=SummarizationConfiguration(method=method)
+        article,
+        config=SummarizationConfiguration(method=method),
+        progress_bar=progress_bar,
     )
     print_summary(summarized_article)
     return None

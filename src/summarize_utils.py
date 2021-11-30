@@ -1,10 +1,10 @@
 """Utilities for the main summarization script."""
 
-
 from enum import Enum
 from typing import Any, Callable, Final, Optional, Union
 
 from pydantic.main import BaseModel
+from tqdm import tqdm
 
 from src.bart_summarization import BartSummarizationConfiguration
 from src.bart_summarization import summarize as bart_summarize
@@ -134,8 +134,26 @@ class SummarizedScientificArticle(ScientificArticle):
     summary: article_type
 
 
+class MockProgressBar:
+    """A mock progressbar class that does nothing."""
+
+    def __init__(self) -> None:
+        """Initialize a mock progressbar class that does nothing."""
+        ...
+
+    def update(self, *args: Any, **kwargs: Any) -> None:
+        """Do nothing."""
+        ...
+
+    def close(self) -> None:
+        """Do nothing."""
+        ...
+
+
 def summarize_article(
-    article: ScientificArticle, config: SummarizationConfiguration
+    article: ScientificArticle,
+    config: SummarizationConfiguration,
+    progress_bar: bool = False,
 ) -> SummarizedScientificArticle:
     """Summarized an article.
 
@@ -152,15 +170,25 @@ def summarize_article(
     max_len = summarization_method_max_lengths.get(config.method, -1)
     article_text = _preprocess_article(article.text.copy(), max_len=max_len)
     summary_dict: article_type = {}
+    if progress_bar:
+        total_article_length = sum(
+            ([sum([len(p) for p in ps]) for ps in article_text.values()])
+        )
+        pbar = tqdm(total=total_article_length)
+    else:
+        pbar = MockProgressBar()
+
     for title, paragraphs in article_text.items():
         summarized_paragraphs: list[str] = []
         for paragraph in paragraphs:
             # config_kwargs = _get_best_configuration_kwargs(method, paragraph)
             res = _summarize(method=method, text=paragraph, kwargs=config.config_kwargs)
+            pbar.update(len(paragraph))
             res = res.strip()
             if len(res) > 0:
                 summarized_paragraphs.append(res)
         summary_dict[title] = summarized_paragraphs
+    pbar.close()
     return SummarizedScientificArticle(
         config=config, summary=summary_dict, **article.dict()
     )
