@@ -13,7 +13,7 @@ from src.gpt3_summarization import summarize as gpt3_summarize
 
 # from src.pagerank_summarization import PageRankSummarizationConfiguration
 from src.pagerank_summarization import summarize as pagerange_summarize
-from src.parse_scientific_article import parsed_article
+from src.parse_scientific_article import ScientificArticle, article_type
 
 
 class SummarizationMethod(Enum):
@@ -84,7 +84,7 @@ def _summarize(
 KEEP_SECTIONS = ["Introduction", "Results", "Discussion", "Results and discussion"]
 
 
-def _preprocess_article(article: parsed_article, max_len: int = -1) -> parsed_article:
+def _preprocess_article(article: article_type, max_len: int = -1) -> article_type:
     # Filter for only certain sections.
     new_article = {k: t for k, t in article.items() if k in KEEP_SECTIONS}
     # Merge shorter paragraphs.
@@ -109,14 +109,14 @@ summarization_method_max_lengths: Final[dict[SummarizationMethod, int]] = {
 }
 
 
-def get_urls() -> set[str]:
+def get_urls() -> dict[str, str]:
     """Get the URLs for the articles to summarize.
 
     Returns:
-        set[str]: Set of URLs.
+        dict[str, str]: Set of URLs.
     """
     return {
-        "https://www.nature.com/articles/s41467-021-22125-z",
+        "kras-alleles": "https://www.nature.com/articles/s41467-021-22125-z",
     }
 
 
@@ -142,17 +142,16 @@ def generate_configurations() -> list[SummarizationConfiguration]:
     ]
 
 
-class SummarizedArticle(BaseModel):
+class SummarizedScientificArticle(ScientificArticle):
     """The results of summarizing an article."""
 
-    url: str
     config: SummarizationConfiguration
-    summary: parsed_article
+    summary: article_type
 
 
 def summarize_article(
-    url: str, article: parsed_article, config: SummarizationConfiguration
-) -> SummarizedArticle:
+    article: ScientificArticle, config: SummarizationConfiguration
+) -> SummarizedScientificArticle:
     """Summarized an article.
 
     Args:
@@ -162,21 +161,23 @@ def summarize_article(
         method.
 
     Returns:
-        SummarizedArticle: The summarized article.
+        SummarizedScientificArticle: The summarized article.
     """
     method = config.method
     max_len = summarization_method_max_lengths.get(config.method, -1)
-    article = _preprocess_article(article.copy(), max_len=max_len)
-    _pre_summary_message(method)
-    summary_dict: parsed_article = {}
-    for title, paragraphs in article.items():
-        _pre_section_message(title)
+    article_text = _preprocess_article(article.text.copy(), max_len=max_len)
+    # _pre_summary_message(method)
+    summary_dict: article_type = {}
+    for title, paragraphs in article_text.items():
+        # _pre_section_message(title)
         summarized_paragraphs: list[str] = []
         for paragraph in paragraphs:
-            config_kwargs = _get_best_configuration_kwargs(method, paragraph)
-            res = _summarize(method=method, text=paragraph, kwargs=config_kwargs)
+            # config_kwargs = _get_best_configuration_kwargs(method, paragraph)
+            res = _summarize(method=method, text=paragraph, kwargs=config.config_kwargs)
             res = res.strip()
             if len(res) > 0:
                 summarized_paragraphs.append(res)
         summary_dict[title] = summarized_paragraphs
-    return SummarizedArticle(url=url, config=config, summary=summary_dict)
+    return SummarizedScientificArticle(
+        config=config, summary=summary_dict, **article.dict()
+    )

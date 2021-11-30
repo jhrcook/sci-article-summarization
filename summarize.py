@@ -5,9 +5,9 @@
 from dotenv import load_dotenv
 from typer import Typer
 
-from src.parse_scientific_article import get_and_parse_article
+from src.parse_scientific_article import ScientificArticle, get_and_parse_article
 from src.summarize_utils import (
-    SummarizedArticle,
+    SummarizedScientificArticle,
     generate_configurations,
     get_urls,
     summarize_article,
@@ -25,17 +25,20 @@ def summarize() -> None:
     Run the summarization pipeline to summarize a series of articles using different
     methods and configurations.
     """
-    articles = {url: get_and_parse_article(url) for url in get_urls()}
-    summarized_articles: list[SummarizedArticle] = []
+    articles: list[ScientificArticle] = [
+        get_and_parse_article(name, url) for name, url in get_urls().items()
+    ]
+    summarized_articles: list[SummarizedScientificArticle] = []
     for summ_config in generate_configurations():
-        for url, article in articles.items():
-            summarized_article = summarize_article(url, article, config=summ_config)
+        for article in articles:
+            summarized_article = summarize_article(article, config=summ_config)
             summarized_articles.append(summarized_article)
+    print(f"number of summarized articles: {len(summarized_articles)}")
     return None
 
 
 @app.command()
-def parse_article(url: str) -> dict[str, list[str]]:
+def parse_article(name: str, url: str) -> ScientificArticle:
     """CLI entrypoint to parse an article's webpage.
 
     Args:
@@ -44,7 +47,7 @@ def parse_article(url: str) -> dict[str, list[str]]:
     Returns:
         dict[str, list[str]]: Parsed article.
     """
-    return get_and_parse_article(url=url)
+    return get_and_parse_article(name=name, url=url)
 
 
 if __name__ == "__main__":
