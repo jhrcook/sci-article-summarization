@@ -82,9 +82,9 @@ def make_examples() -> None:
 
     configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
         SummarizationMethod.TEXTRANK: {"ratio": 0.2},
-        SummarizationMethod.BART: {},
+        SummarizationMethod.BART: {"max_ratio": 0.2, "min_ratio": 0.1},
         SummarizationMethod.GPT3: {
-            "temperature": 0.1,
+            "temperature": 0.3,
             "frequency_penalty": 0.1,
             "presence_penalty": 0.1,
         },

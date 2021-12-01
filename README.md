@@ -83,6 +83,7 @@ This command just parses an article and is useful for checking if an article's w
 
 ## To-Do
 
+- break down the Results section into sub-sections - it will make it easier to read the summary.
 - look into different options from HuggingFace (more info [here](https://huggingface.co/transformers/task_summary.html#summarization))
   - and other parameters for the HuggingFace models
 - system for:
