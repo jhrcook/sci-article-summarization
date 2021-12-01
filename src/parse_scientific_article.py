@@ -6,12 +6,21 @@ from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup, element
+from pydantic import BaseModel
 
-parsed_article = dict[str, list[str]]
+article_type = dict[str, list[str]]
+
+
+class ScientificArticle(BaseModel):
+    """Scientific article."""
+
+    title: str
+    url: str
+    text: article_type
 
 
 def _get_url_cache_path(url: str) -> Path:
-    return Path("cache") / str(hash(url))
+    return Path("cache") / re.sub(r"[^\w\s]", "", url)
 
 
 def _check_cache(url: str) -> Optional[requests.Response]:
@@ -74,14 +83,18 @@ def _extract_section_text(article_section: element.Tag) -> list[str]:
     return [x.text for x in article_section.find_all("p")]
 
 
-def parse_article(res: requests.Response) -> parsed_article:
+def _extract_article_title(soup: BeautifulSoup) -> str:
+    return soup.find(class_="c-article-title").text
+
+
+def parse_article(res: requests.Response, url: str) -> ScientificArticle:
     """Parse an article into its major components.
 
     Args:
         res (requests.Response): Article webpage.
 
     Returns:
-        parsed_article: Parsed article.
+        ScientificArticle: Parsed article.
     """
     keep_sections = {
         "Abstract",
@@ -95,26 +108,26 @@ def parse_article(res: requests.Response) -> parsed_article:
     soup = BeautifulSoup(res.content, "html.parser")
     _remove_figures(soup)
     _remove_citations(soup)
+    article_title = _extract_article_title(soup)
     article_sections = soup.find_all(class_="c-article-section")
-    sections_dict: parsed_article = {}
+    sections_dict: article_type = {}
     for section in article_sections:
         section_title = _extract_section_title(section)
         if section_title not in keep_sections:
             continue
         section_text = _extract_section_text(section)
         sections_dict[section_title] = section_text
-    return sections_dict
+    return ScientificArticle(title=article_title, url=url, text=sections_dict)
 
 
-def get_and_parse_article(url: str) -> parsed_article:
+def get_and_parse_article(url: str) -> ScientificArticle:
     """Get and parse a scientific article from the web.
 
     Args:
         url (str): URL of the article.
 
     Returns:
-        parsed_article: Parsed article.
+        ScientificArticle: The data and text from the scientific article.
     """
     response = get_webpage(url=url)
-    article = parse_article(response)
-    return article
+    return parse_article(response, url=url)

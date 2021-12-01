@@ -2,15 +2,17 @@
 
 from typing import Any
 
-from pydantic import BaseModel, PositiveInt
+from pydantic import BaseModel, PositiveFloat
 from transformers import pipeline
+
+from src.text_utils import word_count
 
 
 class BartSummarizationConfiguration(BaseModel):
     """Configuration parameters for summarization with BART."""
 
-    max_length: PositiveInt = 200
-    min_length: PositiveInt = 50
+    max_ratio: PositiveFloat = 0.3
+    min_ratio: PositiveFloat = 0.1
     do_sample: bool = False
 
 
@@ -34,10 +36,11 @@ def summarize(text: str, config_kwargs: dict[str, Any]) -> str:
     """
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
     config = BartSummarizationConfiguration(**config_kwargs)
+    n_words = word_count(text)
     res = summarizer(
         text,
-        max_length=config.max_length,
-        min_length=config.min_length,
+        max_length=int(n_words * config.max_ratio),
+        min_length=int(n_words * config.min_ratio),
         do_sample=config.do_sample,
     )
     return _extract_summary(res)
