@@ -39,8 +39,8 @@ def summarize(text: str, config_kwargs: dict[str, Any]) -> str:
     n_words = word_count(text)
     res = summarizer(
         text,
-        max_length=int(n_words * config.max_ratio),
-        min_length=int(n_words * config.min_ratio),
+        max_length=max(int(n_words * config.max_ratio), 40),
+        min_length=max(int(n_words * config.min_ratio), 15),
         do_sample=config.do_sample,
     )
     return _extract_summary(res)

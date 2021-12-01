@@ -14,6 +14,7 @@
 The purpose of this project is that I wanted to play around with various AI amd ML summarization methods.
 Therefore, I have created a system by which a scientific article is downloaded, parsed, and fed through various summarization models under different configurations.
 I chose to use scientific articles as a medium because I thought it would present an interesting, novel, and diverse set of test-cases.
+Also, there are standard practices in scientific articles that makes scoring the summary's accuracy easy such as the Abstract and Results sub-section titles.
 
 At the moment, I have a system for parsing *Nature Communication* articles from their webpage and summarizing the paper with the three methods listed below.
 My next step is to create a structured method for saving the results for easy comparison.
