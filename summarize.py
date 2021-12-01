@@ -17,8 +17,7 @@ from src.summarize_utils import (
     get_urls,
     summarize_article,
 )
-
-# from src.write_summary import print_summary, write_summary
+from src.write_summary import print_summary, write_summary
 
 load_dotenv()
 
@@ -72,12 +71,10 @@ def summarize(
         config=SummarizationConfiguration(method=method, config_kwargs=kwargs),
     )
 
-    print(summarized_article)
-
-    # if output is not None:
-    #     write_summary(summarized_article, output)
-    # else:
-    #     print_summary(summarized_article)
+    if output is not None:
+        write_summary(summarized_article, output)
+    else:
+        print_summary(summarized_article)
     return None
 
 
@@ -92,8 +89,8 @@ def make_examples() -> None:
         out_dir.mkdir()
 
     configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
-        SummarizationMethod.TEXTRANK: {"ratio": 0.2},
-        # SummarizationMethod.BART: {"max_ratio": 0.2, "min_ratio": 0.1},
+        SummarizationMethod.TEXTRANK: {"ratio": 0.1},
+        SummarizationMethod.BART: {"max_ratio": 0.3, "min_ratio": 0.1},
         # SummarizationMethod.GPT3: {
         #     "temperature": 0.3,
         #     "frequency_penalty": 0.1,

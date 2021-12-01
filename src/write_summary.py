@@ -39,9 +39,20 @@ def write_summary(article: SummarizedScientificArticle, to: Path) -> None:
     """
     text = "# " + article.title + "\n\n"
     text += "summarization method: " + article.config.method.value + "\n\n"
-    for section_title, paragraphs in article.summary.items():
+    for section_title, paragraphs in article.summary.dict().items():
+        if len(paragraphs) == 0:
+            continue
+
         text += "## " + section_title + "\n\n"
-        text += "\n".join(paragraphs) + "\n\n"
+        if isinstance(paragraphs, list):
+            text += "\n".join(paragraphs) + "\n\n"
+        elif isinstance(paragraphs, dict):
+            for subsection, subparagraphs in paragraphs.items():
+                text += "### " + subsection + "\n\n"
+                text += "\n".join(subparagraphs) + "\n\n"
+        else:
+            raise BaseException("Unexpected type of paragraph in summary.")
+
     with open(to, "w") as file:
         file.write(text)
     return None
@@ -64,6 +75,16 @@ def _pre_section_message(name: str) -> None:
     return None
 
 
+def _pre_subsection_message(name: str) -> None:
+    print("\n" + name)
+    print("-" * len(name))
+    return None
+
+
+def _print_paragraphs(paragraphs: list[str]) -> None:
+    print("\n".join(paragraphs))
+
+
 def print_summary(article: SummarizedScientificArticle) -> None:
     """Print out a summarized article.
 
@@ -71,8 +92,17 @@ def print_summary(article: SummarizedScientificArticle) -> None:
         article (SummarizedScientificArticle): Summarized article information.
     """
     _pre_summary_message(name=article.title, method=article.config.method)
-    for title, paragraphs in article.summary.items():
+    for title, paragraphs in article.summary.dict().items():
+        if len(paragraphs) == 0:
+            continue
         _pre_section_message(title)
-        print("\n".join(paragraphs))
+        if isinstance(paragraphs, list):
+            _print_paragraphs(paragraphs)
+        elif isinstance(paragraphs, dict):
+            for subtitle, sub_paragraphs in paragraphs.items():
+                _pre_subsection_message(subtitle)
+                _print_paragraphs(sub_paragraphs)
+        else:
+            raise BaseException("Unexpected type of paragraph in summary.")
     print("-" * 80 + "\n")
     return None
