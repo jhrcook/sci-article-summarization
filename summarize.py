@@ -17,7 +17,8 @@ from src.summarize_utils import (
     get_urls,
     summarize_article,
 )
-from src.write_summary import print_summary, write_summary
+
+# from src.write_summary import print_summary, write_summary
 
 load_dotenv()
 
@@ -44,12 +45,14 @@ def summarize_all() -> None:
 
 
 @app.command()
-def summarize(  # type: ignore
+def summarize(
     url: str,
     method: SummarizationMethod,
-    progress_bar: bool = True,
     output: Optional[Path] = None,
-    **kwargs,
+    ratio: Optional[float] = None,
+    min_ratio: Optional[float] = None,
+    max_ratio: Optional[float] = None,
+    temperature: Optional[float] = None,
 ) -> None:
     """Summarize an online scientific article.
 
@@ -57,16 +60,24 @@ def summarize(  # type: ignore
         url (str): URL of the webpage.
     """
     article = get_and_parse_article(url=url)
+    kwargs = {
+        "ratio": ratio,
+        "min_ratio": min_ratio,
+        "max_ratio": max_ratio,
+        "temperature": temperature,
+    }
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}  # remove Nones
     summarized_article = summarize_article(
         article,
         config=SummarizationConfiguration(method=method, config_kwargs=kwargs),
-        progress_bar=progress_bar,
     )
 
-    if output is not None:
-        write_summary(summarized_article, output)
-    else:
-        print_summary(summarized_article)
+    print(summarized_article)
+
+    # if output is not None:
+    #     write_summary(summarized_article, output)
+    # else:
+    #     print_summary(summarized_article)
     return None
 
 
@@ -82,12 +93,12 @@ def make_examples() -> None:
 
     configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
         SummarizationMethod.TEXTRANK: {"ratio": 0.2},
-        SummarizationMethod.BART: {"max_ratio": 0.2, "min_ratio": 0.1},
-        SummarizationMethod.GPT3: {
-            "temperature": 0.3,
-            "frequency_penalty": 0.1,
-            "presence_penalty": 0.1,
-        },
+        # SummarizationMethod.BART: {"max_ratio": 0.2, "min_ratio": 0.1},
+        # SummarizationMethod.GPT3: {
+        #     "temperature": 0.3,
+        #     "frequency_penalty": 0.1,
+        #     "presence_penalty": 0.1,
+        # },
     }
 
     for method, kwargs in configs.items():
@@ -96,7 +107,6 @@ def make_examples() -> None:
         summarize(
             KRAS_ALLELES_URL,
             method=method,
-            progress_bar=True,
             output=out_file,
             **kwargs,
         )

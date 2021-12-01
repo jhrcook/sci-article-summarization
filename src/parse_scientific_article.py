@@ -8,6 +8,8 @@ import requests
 from bs4 import BeautifulSoup, element
 from pydantic import BaseModel
 
+from src.text_utils import indent
+
 section_text = list[str]
 multisection_text = dict[str, list[str]]
 
@@ -15,11 +17,11 @@ multisection_text = dict[str, list[str]]
 class ScientificArticleText(BaseModel):
     """Organized text of a scientific article."""
 
-    Abstract: list[str]
-    Introduction: list[str]
-    Methods: dict[str, list[str]]
-    Results: dict[str, list[str]]
-    Discussion: list[str]
+    Abstract: section_text
+    Introduction: section_text
+    Methods: multisection_text
+    Results: multisection_text
+    Discussion: section_text
 
     def __str__(self) -> str:
         """Get a string representation of the scientific article text."""
@@ -46,10 +48,7 @@ class ScientificArticle(BaseModel):
         """Get a string representation of the scientific article."""
         msg = self.title + "\n"
         msg += f"(url: {self.url})\n"
-        _sci_text = ""
-        for line in str(self.text).strip().splitlines():
-            _sci_text += "  " + line + "\n"
-        msg += _sci_text
+        msg += indent(str(self.text))
         return msg
 
     def __repr__(self) -> str:
