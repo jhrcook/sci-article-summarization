@@ -9,8 +9,10 @@ from tqdm import tqdm
 from src.bart_summarization import summarize as bart_summarize
 from src.gpt3_summarization import summarize as gpt3_summarize
 from src.pagerank_summarization import summarize as pagerange_summarize
-from src.parse_scientific_article import ScientificArticle, article_type
+from src.parse_scientific_article import ScientificArticle
 from src.text_utils import word_count
+
+article_type = dict[str, list[str]]
 
 
 class SummarizationMethod(Enum):
