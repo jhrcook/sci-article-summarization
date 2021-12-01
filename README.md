@@ -2,7 +2,7 @@
 
 **Comparing the ability of various summarizing ML/AI methods on scientific articles. (work in progress)**
 
-**Check out examples of summarizing the paper ["The origins and genetic interactions of *KRAS* mutations are allele- and tissue-specific"](https://www.nature.com/articles/s41467-021-22125-z) in the [./examples/](./examples/) directory.**
+**Check out examples of summarizing the paper ["The origins and genetic interactions of *KRAS* mutations are allele- and tissue-specific"](https://www.nature.com/articles/s41467-021-22125-z) in the [examples](./examples/) directory.**
 
 [![python](https://img.shields.io/badge/Python-3.9-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 [![pytorch](https://img.shields.io/badge/PyTorch-1.10.0-EE4C2C.svg?style=flat&logo=pytorch)](https://pytorch.org)
@@ -50,7 +50,7 @@ There are some other options for this command that you can peruse using
 ### Generate examples
 
 I made a specific command to generate the example summarizations of my paper ["The origins and genetic interactions of *KRAS* mutations are allele- and tissue-specific"](https://www.nature.com/articles/s41467-021-22125-z).
-There examples are available in the [examples/](./examples/) directory.
+There examples are available in the [examples](./examples/) directory.
 The following command runs the paper through each summarization method with some specific configurations.
 
 ```bash
