@@ -2,44 +2,59 @@
 
 """Entrypoint to summarization functions."""
 
+import pickle
+from itertools import product
 from pathlib import Path
 from typing import Final, Optional, Union
 
 from dotenv import load_dotenv
+from tqdm import tqdm
 from typer import Typer
 
 from src.parse_scientific_article import ScientificArticle, get_and_parse_article
+from src.pipeline import generate_configurations, get_urls
 from src.summarize_utils import (
     SummarizationConfiguration,
     SummarizationMethod,
     SummarizedScientificArticle,
-    generate_configurations,
-    get_urls,
     summarize_article,
 )
-from src.write_summary import print_summary, write_summary
+from src.write_summary import make_summary_file_name, print_summary, write_summary
 
 load_dotenv()
 
 app = Typer()
 
 
+def _write_pkl(article: SummarizedScientificArticle, path: Path) -> None:
+    with open(path, "wb") as file:
+        pickle.dump(article, file)
+    return None
+
+
 @app.command()
-def summarize_all() -> None:
+def summarize_all(force: bool = False) -> None:
     """Run the summarization pipeline to summarize a series of articles.
 
     Run the summarization pipeline to summarize a series of articles using different
     methods and configurations.
     """
+    outdir = Path("pipeline-results")
+    if not outdir.exists():
+        outdir.mkdir()
+
     articles: list[ScientificArticle] = [
         get_and_parse_article(url) for url in get_urls()
     ]
-    summarized_articles: list[SummarizedScientificArticle] = []
-    for summ_config in generate_configurations():
-        for article in articles:
+    configurations = generate_configurations()
+    print(f"number of articles: {len(articles)}")
+    print(f"number of configurations: {len(configurations)}")
+    n_iters = len(articles) * len(configurations)
+    for summ_config, article in tqdm(product(configurations, articles), total=n_iters):
+        pkl_path = outdir / make_summary_file_name(article, summ_config, suffix=".pkl")
+        if force or not pkl_path.exists():
             summarized_article = summarize_article(article, config=summ_config)
-            summarized_articles.append(summarized_article)
-    print(f"number of summarized articles: {len(summarized_articles)}")
+            _write_pkl(summarized_article, pkl_path)
     return None
 
 
@@ -66,6 +81,8 @@ def summarize(
         "min_ratio": min_ratio,
         "max_ratio": max_ratio,
         "temperature": temperature,
+        "frequency_penalty": frequency_penalty,
+        "presence_penalty": presence_penalty,
     }
     kwargs = {k: v for k, v in kwargs.items() if v is not None}  # remove `None`s
     summarized_article = summarize_article(
@@ -91,13 +108,13 @@ def make_examples() -> None:
         out_dir.mkdir()
 
     configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
-        # SummarizationMethod.TEXTRANK: {"ratio": 0.1},
+        SummarizationMethod.TEXTRANK: {"ratio": 0.1},
         # SummarizationMethod.BART: {"min_ratio": 0.1, "max_ratio": 0.3},
-        SummarizationMethod.GPT3: {
-            "temperature": 0.3,
-            "frequency_penalty": 0.1,
-            "presence_penalty": 0.1,
-        },
+        # SummarizationMethod.GPT3: {
+        #     "temperature": 0.3,
+        #     "frequency_penalty": 0.1,
+        #     "presence_penalty": 0.1,
+        # },
     }
 
     for method, kwargs in configs.items():
