@@ -52,6 +52,8 @@ def summarize(
     min_ratio: Optional[float] = None,
     max_ratio: Optional[float] = None,
     temperature: Optional[float] = None,
+    frequency_penalty: Optional[float] = None,
+    presence_penalty: Optional[float] = None,
 ) -> None:
     """Summarize an online scientific article.
 
@@ -65,7 +67,7 @@ def summarize(
         "max_ratio": max_ratio,
         "temperature": temperature,
     }
-    kwargs = {k: v for k, v in kwargs.items() if v is not None}  # remove Nones
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}  # remove `None`s
     summarized_article = summarize_article(
         article,
         config=SummarizationConfiguration(method=method, config_kwargs=kwargs),
@@ -89,13 +91,13 @@ def make_examples() -> None:
         out_dir.mkdir()
 
     configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
-        SummarizationMethod.TEXTRANK: {"ratio": 0.1},
-        SummarizationMethod.BART: {"max_ratio": 0.3, "min_ratio": 0.1},
-        # SummarizationMethod.GPT3: {
-        #     "temperature": 0.3,
-        #     "frequency_penalty": 0.1,
-        #     "presence_penalty": 0.1,
-        # },
+        # SummarizationMethod.TEXTRANK: {"ratio": 0.1},
+        # SummarizationMethod.BART: {"min_ratio": 0.1, "max_ratio": 0.3},
+        SummarizationMethod.GPT3: {
+            "temperature": 0.3,
+            "frequency_penalty": 0.1,
+            "presence_penalty": 0.1,
+        },
     }
 
     for method, kwargs in configs.items():
