@@ -1,6 +1,6 @@
 channels:
-  - huggingface
-  - pytorch
+  # - huggingface
+  # - pytorch
   - conda-forge
   - defaults
 dependencies:
@@ -14,7 +14,7 @@ dependencies:
   # - python=3.9.7
   # - pytorch=1.10.*
   # - summa=3.0.*
-  - streamlit=1.2.*
+  # - streamlit=1.2.*
   # - transformers=4.11.*
   - pip:
     - python-dotenv
