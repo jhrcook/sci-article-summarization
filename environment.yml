@@ -1,6 +1,7 @@
+name: sci-article-summarization
 channels:
-  # - huggingface
-  # - pytorch
+  - huggingface
+  - pytorch
   - conda-forge
   - defaults
 dependencies:
@@ -15,7 +16,7 @@ dependencies:
   # - pytorch=1.10.*
   # - summa=3.0.*
   # - streamlit=1.2.*
-  # - transformers=4.11.*
+  - transformers=4.11.*
   - pip:
     - python-dotenv
     - openai
