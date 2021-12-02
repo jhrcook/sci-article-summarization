@@ -72,6 +72,23 @@ def read_summarization(fpath: Path) -> SummarizedScientificArticle:
     return article
 
 
+def get_summarized_articles(
+    dir: Path,
+) -> dict[SummarizedScientificArticleInfo, SummarizedScientificArticle]:
+    """Read in the summarized article objects and format as a dictionary.
+
+    Args:
+        dir (Path): Directory holding the pickled summarized article objects.
+
+    Returns:
+        dict[SummarizedScientificArticleInfo, SummarizedScientificArticle]: Dictionary
+        mapping summarization information to the full summary object.
+    """
+    files = [f for f in dir.iterdir() if f.suffix == ".pkl"]
+    summaries = [read_summarization(f) for f in files]
+    return {make_summary_info(a): a for a in summaries}
+
+
 def write_article_section(text: section_text) -> None:
     """Write an article section to streamlit.
 
@@ -95,23 +112,6 @@ def write_article_multisection(text: multisection_text) -> None:
         st.markdown(f"**{sub_title}**")
         write_article_section(sub_text)
     return None
-
-
-def get_summarized_articles(
-    dir: Path,
-) -> dict[SummarizedScientificArticleInfo, SummarizedScientificArticle]:
-    """Read in the summarized article objects and format as a dictionary.
-
-    Args:
-        dir (Path): Directory holding the pickled summarized article objects.
-
-    Returns:
-        dict[SummarizedScientificArticleInfo, SummarizedScientificArticle]: Dictionary
-        mapping summarization information to the full summary object.
-    """
-    files = [f for f in dir.iterdir() if f.suffix == ".pkl"]
-    summaries = [read_summarization(f) for f in files]
-    return {make_summary_info(a): a for a in summaries}
 
 
 def more_info() -> str:
