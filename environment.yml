@@ -7,14 +7,14 @@ channels:
 dependencies:
   - black
   - flake8
-  # - huggingface_hub=0.0.*
+  - huggingface_hub=0.0.*
   - isort
   - mypy=0.*
   - pip
   - pycodestyle
   # - python=3.9.7
-  # - pytorch=1.10.*
-  # - summa=3.0.*
+  - pytorch=1.10.*
+  - summa=3.0.*
   # - streamlit=1.2.*
   - transformers=4.11.*
   - pip:
