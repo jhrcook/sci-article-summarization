@@ -23,6 +23,7 @@ I may also standardize the system/API for getting a parsed article so that I can
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![pydocstyle](https://img.shields.io/badge/pydocstyle-enabled-AD4CD3)](http://www.pydocstyle.org/en/stable/)
+
 ## Entrypoints
 
 There are various entrypoints available as CLI commands to the article parsing and summarization functions available in the [`summarize.py`](summarize.py) script.
@@ -74,6 +75,15 @@ This command just parses an article and is useful for checking if an article's w
 
 ```bash
 ./summarize.py parse-article "https://www.nature.com/articles/s41467-021-22125-z"
+```
+
+## Streamlit app
+
+This project has a web application built with [Streamlit]() to make comparing two different summaries easier.
+It it available online, but you can also launch the Streamlit app locally using the following command:
+
+```bash
+streamlit run app.py
 ```
 
 ## Setup
