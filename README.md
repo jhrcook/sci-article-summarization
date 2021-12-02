@@ -2,14 +2,9 @@
 
 **Comparing the ability of various summarizing ML/AI methods on scientific articles. (work in progress)**
 
-**Check out examples of summarizing the paper ["The origins and genetic interactions of *KRAS* mutations are allele- and tissue-specific"](https://www.nature.com/articles/s41467-021-22125-z) in the [./examples/](./examples/) directory.**
+**Check out examples of summarizing the paper ["The origins and genetic interactions of *KRAS* mutations are allele- and tissue-specific"](https://www.nature.com/articles/s41467-021-22125-z) in the [examples](./examples/) directory.**
 
-[![python](https://img.shields.io/badge/Python-3.9-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![pytorch](https://img.shields.io/badge/PyTorch-1.10.0-EE4C2C.svg?style=flat&logo=pytorch)](https://pytorch.org)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
-[![pydocstyle](https://img.shields.io/badge/pydocstyle-enabled-AD4CD3)](http://www.pydocstyle.org/en/stable/)
+Or you can compare the results of the different summary methods using the Streamlit web app: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/jhcook/sci-article-summarization/master/app.py)
 
 The purpose of this project is that I wanted to play around with various AI amd ML summarization methods.
 Therefore, I have created a system by which a scientific article is downloaded, parsed, and fed through various summarization models under different configurations.
@@ -21,6 +16,13 @@ My next step is to create a structured method for saving the results for easy co
 I will run multiple articles through the methods with various parameters for the models.
 I may also standardize the system/API for getting a parsed article so that I can create parsing systems for multiple journals (though this is a low priority).
 
+[![python](https://img.shields.io/badge/Python-3.9-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.2.0-FF4B4B.svg?style=flat&logo=Streamlit&logoColor=white)](https://streamlit.io)
+[![pytorch](https://img.shields.io/badge/PyTorch-1.10.0-EE4C2C.svg?style=flat&logo=pytorch)](https://pytorch.org) <br>
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![pydocstyle](https://img.shields.io/badge/pydocstyle-enabled-AD4CD3)](http://www.pydocstyle.org/en/stable/)
 ## Entrypoints
 
 There are various entrypoints available as CLI commands to the article parsing and summarization functions available in the [`summarize.py`](summarize.py) script.
@@ -50,7 +52,7 @@ There are some other options for this command that you can peruse using
 ### Generate examples
 
 I made a specific command to generate the example summarizations of my paper ["The origins and genetic interactions of *KRAS* mutations are allele- and tissue-specific"](https://www.nature.com/articles/s41467-021-22125-z).
-There examples are available in the [examples/](./examples/) directory.
+There examples are available in the [examples](./examples/) directory.
 The following command runs the paper through each summarization method with some specific configurations.
 
 ```bash

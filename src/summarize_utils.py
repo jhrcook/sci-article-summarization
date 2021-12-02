@@ -98,41 +98,6 @@ def _compress_paragraphs(paragraphs: section_text, max_len: int) -> section_text
     return new_ps
 
 
-def _preprocess_article(article: article_type, max_len: int = -1) -> article_type:
-    # 1. Filter for only certain sections.
-    new_article = {k: t for k, t in article.items() if k in KEEP_SECTIONS}
-
-    # 2. Merge shorter paragraphs.
-    for title, paragraphs in new_article.items():
-        new_article[title] = _compress_paragraphs(paragraphs, max_len=max_len)
-
-    return new_article
-
-
-def get_urls() -> set[str]:
-    """Get the URLs for the articles to summarize.
-
-    Returns:
-        set[str]: Set of URLs.
-    """
-    return {"https://www.nature.com/articles/s41467-021-22125-z"}
-
-
-def generate_configurations() -> list[SummarizationConfiguration]:
-    """Get configurations to use for the summarizations.
-
-    Returns:
-        list[SummarizationConfiguration]: List of summarization configurations.
-    """
-    textrank_ratios = [0.01, 0.05, 0.1, 0.2]
-    return [
-        SummarizationConfiguration(
-            method=SummarizationMethod.TEXTRANK, config_kwarg={"ratio": ratio}
-        )
-        for ratio in textrank_ratios
-    ]
-
-
 def _summarize_paragraphs(
     text: section_text,
     method: SummarizationMethod,

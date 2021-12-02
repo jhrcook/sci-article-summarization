@@ -5,13 +5,20 @@ from typing import Optional
 
 from colorama import Fore, Style, init
 
-from src.summarize_utils import SummarizationMethod, SummarizedScientificArticle
+from src.summarize_utils import (
+    ScientificArticle,
+    SummarizationConfiguration,
+    SummarizationMethod,
+    SummarizedScientificArticle,
+)
 
 init(autoreset=True)
 
 
 def make_summary_file_name(
-    article: SummarizedScientificArticle, suffix: Optional[str] = ".md"
+    article: ScientificArticle,
+    config: SummarizationConfiguration,
+    suffix: Optional[str] = ".md",
 ) -> str:
     """Make a file name for a summaried article.
 
@@ -22,9 +29,9 @@ def make_summary_file_name(
     Returns:
         str: Custom file name based off of the article and summarization config.
     """
-    fname: str = article.title.replace(" ", "-") + "_" + article.config.method.value
-    if (kwargs := article.config.config_kwargs) is not None and len(kwargs) > 0:
-        fname += "_".join([f"{k}-{v}" for k, v in kwargs.items()])
+    fname: str = article.title.replace(" ", "-") + "_" + config.method.value
+    if (kwargs := config.config_kwargs) is not None and len(kwargs) > 0:
+        fname += "_" + "_".join([f"{k}-{v}" for k, v in kwargs.items()])
     if suffix is not None:
         fname += suffix
     return fname
