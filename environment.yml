@@ -11,7 +11,7 @@ dependencies:
   - mypy=0.*
   - pip
   - pycodestyle
-  - python=3.9.7
+  # - python=3.9.7
   - pytorch=1.10.*
   - summa=3.0.*
   - streamlit=1.2.*
