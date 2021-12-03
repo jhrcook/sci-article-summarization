@@ -10,7 +10,7 @@ dependencies:
   - huggingface_hub=0.0.*
   - isort
   - mypy=0.*
-  - numpy=1.24.*
+  - numpy=1.21.*
   - pip
   - pycodestyle
   # - python=3.9.7
