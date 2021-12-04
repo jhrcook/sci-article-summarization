@@ -17,7 +17,7 @@ dependencies:
   - pytorch=1.10.*
   - python-dotenv
   - pyyaml
-  - summa=3.0.*
+  - scipy==1.7.3
   # - streamlit=1.2.*
   - tqdm=4.62.*
   - transformers=4.11.*
