@@ -79,7 +79,7 @@ This command just parses an article and is useful for checking if an article's w
 
 ## Streamlit app
 
-This project has a web application built with [Streamlit]() to make comparing two different summaries easier.
+This project has a web application built with [Streamlit](https://streamlit.io) to make comparing two different summaries easier.
 It it available online, but you can also launch the Streamlit app locally using the following command:
 
 ```bash
@@ -88,9 +88,24 @@ streamlit run app.py
 
 ## Setup
 
-- create conda environment
-- make `.env` file with OpenAI key
+Because of the all the ML/AI libraries required for this project, I used [conda](https://docs.conda.io) to manage dependencies.
+The environment was created using the following command:
 
+```bash
+conda create --prefix ./.venv -f enviornment.yaml
+conda activate ./.venv
+```
+
+You need an API key to use OpenAI.
+This can be created by creating an account [here](https://openai.com), logging in, and going to "Personal/View API Keys".
+Make a file called ".env" and add your API key as the name `OPENAI_API_KEY`.
+It should look something like this:
+
+```text
+OPENAI_API_KEY="your-key-here"
+```
+
+While ".env" is in the ".gitignore", it is worth double-checking that this file is not being tracked by git.
 
 ---
 

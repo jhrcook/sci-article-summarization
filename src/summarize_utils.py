@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Any, Callable, Final, Optional, Union
 
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 
 from src.bart_summarization import summarize as bart_summarize
 from src.gpt3_summarization import summarize as gpt3_summarize
