@@ -22,6 +22,7 @@ dependencies:
   - tqdm=4.62.*
   - transformers=4.11.*
   - typer=0.4.*
+  - types-requests
   - openai=0.11.*
   - pip:
-    - summa==1.2.0
+    - summa>=1.2.0

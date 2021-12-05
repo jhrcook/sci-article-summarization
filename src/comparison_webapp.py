@@ -1,13 +1,17 @@
 """Components for the streamlit web application."""
 
-import pickle
+import json
 from pathlib import Path
 
 import streamlit as st
 from pydantic import BaseModel
 
-from src.parse_scientific_article import multisection_text, section_text
-from src.summarize_utils import SummarizationConfiguration, SummarizedScientificArticle
+from src.classes_and_types import (
+    SummarizationConfiguration,
+    SummarizedScientificArticle,
+    multisection_text,
+    section_text,
+)
 
 
 class SummarizedScientificArticleInfo(BaseModel):
@@ -67,8 +71,8 @@ def read_summarization(fpath: Path) -> SummarizedScientificArticle:
     Returns:
         SummarizedScientificArticle: The summarized scientific article object.
     """
-    with open(fpath, "rb") as file:
-        article = pickle.load(file)
+    with open(fpath, "r") as file:
+        article = SummarizedScientificArticle(**json.load(file))
     return article
 
 
@@ -84,7 +88,7 @@ def get_summarized_articles(
         dict[SummarizedScientificArticleInfo, SummarizedScientificArticle]: Dictionary
         mapping summarization information to the full summary object.
     """
-    files = [f for f in dir.iterdir() if f.suffix == ".pkl"]
+    files = [f for f in dir.iterdir() if f.suffix == ".json"]
     summaries = [read_summarization(f) for f in files]
     return {make_summary_info(a): a for a in summaries}
 

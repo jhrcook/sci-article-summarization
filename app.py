@@ -25,8 +25,6 @@ summ_articles = get_summarized_articles(SUMMARIZATION_PIPELINE_OUTDIR)
 
 # ---- Streamlit app ---- #
 
-st.set_page_config(page_title="ML/AI summaries")
-
 st.title("Comparing scientific article summaries")
 
 with st.expander("More info"):
@@ -72,4 +70,4 @@ for col_idx, col in enumerate(st.columns(2)):
         elif article_section == "Results":
             write_article_multisection(_article.summary.Results)
         else:
-            st.write("Unexpected article seciton...")
+            st.write("Unexpected article section...")

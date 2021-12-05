@@ -6,54 +6,13 @@ from typing import Optional, Union
 
 import requests
 from bs4 import BeautifulSoup, element
-from pydantic import BaseModel
 
-from src.text_utils import indent
-
-section_text = list[str]
-multisection_text = dict[str, list[str]]
-
-
-class ScientificArticleText(BaseModel):
-    """Organized text of a scientific article."""
-
-    Abstract: section_text
-    Introduction: section_text
-    Methods: multisection_text
-    Results: multisection_text
-    Discussion: section_text
-
-    def __str__(self) -> str:
-        """Get a string representation of the scientific article text."""
-        msg = f"Abstract: {len(self.Abstract)} paragraph(s)\n"
-        msg += f"Introduction: {len(self.Introduction)} paragraph\n"
-        msg += f"Methods: {len(self.Methods)} sections\n"
-        msg += f"Results: {len(self.Results)} sections\n"
-        msg += f"Discussion: {len(self.Discussion)} paragraph(s)"
-        return msg
-
-    def __repr__(self) -> str:
-        """Get a string representation of the scientific article text."""
-        return str(self)
-
-
-class ScientificArticle(BaseModel):
-    """Scientific article."""
-
-    title: str
-    url: str
-    text: ScientificArticleText
-
-    def __str__(self) -> str:
-        """Get a string representation of the scientific article."""
-        msg = self.title + "\n"
-        msg += f"(url: {self.url})\n"
-        msg += indent(str(self.text))
-        return msg
-
-    def __repr__(self) -> str:
-        """Get a string representation of the scientific article."""
-        return str(self)
+from src.classes_and_types import (
+    ScientificArticle,
+    ScientificArticleText,
+    multisection_text,
+    section_text,
+)
 
 
 def _get_url_cache_path(url: str) -> Path:
@@ -177,8 +136,3 @@ def get_and_parse_article(url: str) -> ScientificArticle:
     """
     response = get_webpage(url=url)
     return parse_article(response, url=url)
-
-
-# <h3 class="c-article__sub-heading" id="Sec3">
-#   <i>KRAS</i> alleles are non-uniformly distributed across cancers
-# </h3>
