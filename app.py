@@ -25,8 +25,6 @@ summ_articles = get_summarized_articles(SUMMARIZATION_PIPELINE_OUTDIR)
 
 # ---- Streamlit app ---- #
 
-st.set_page_config(page_title="ML/AI summaries")
-
 st.title("Comparing scientific article summaries")
 
 with st.expander("More info"):

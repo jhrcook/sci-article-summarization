@@ -2,7 +2,6 @@
 
 """Entrypoint to summarization functions."""
 
-import pickle
 from itertools import product
 from pathlib import Path
 from typing import Final, Optional, Union
@@ -27,9 +26,11 @@ load_dotenv()
 app = Typer()
 
 
-def _write_pkl(article: SummarizedScientificArticle, path: Path) -> None:
-    with open(path, "wb") as file:
-        pickle.dump(article, file)
+def _write_summarized_article_to_json(
+    article: SummarizedScientificArticle, path: Path
+) -> None:
+    with open(path, "w") as file:
+        file.write(article.json())
     return None
 
 
@@ -52,10 +53,12 @@ def summarize_all(force: bool = False) -> None:
     print(f"number of configurations: {len(configurations)}")
     n_iters = len(articles) * len(configurations)
     for summ_config, article in tqdm(product(configurations, articles), total=n_iters):
-        pkl_path = outdir / make_summary_file_name(article, summ_config, suffix=".pkl")
-        if force or not pkl_path.exists():
+        json_path = outdir / make_summary_file_name(
+            article, summ_config, suffix=".json"
+        )
+        if force or not json_path.exists():
             summarized_article = summarize_article(article, config=summ_config)
-            _write_pkl(summarized_article, pkl_path)
+            _write_summarized_article_to_json(summarized_article, json_path)
     return None
 
 
