@@ -92,7 +92,7 @@ Because of the all the ML/AI libraries required for this project, I used [conda]
 The environment was created using the following command:
 
 ```bash
-conda create --prefix ./.venv
+conda create --prefix ./.venv -f enviornment.yaml
 conda activate ./.venv
 ```
 
