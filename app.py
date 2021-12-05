@@ -72,4 +72,4 @@ for col_idx, col in enumerate(st.columns(2)):
         elif article_section == "Results":
             write_article_multisection(_article.summary.Results)
         else:
-            st.write("Unexpected article seciton...")
+            st.write("Unexpected article section...")

@@ -1,62 +1,23 @@
 """Utilities for the main summarization script."""
 
-from enum import Enum
-from typing import Any, Callable, Final, Optional, Union
-
-from pydantic import BaseModel
+from typing import Any, Callable, Final, Optional
 
 from src.bart_summarization import summarize as bart_summarize
-from src.gpt3_summarization import summarize as gpt3_summarize
-from src.pagerank_summarization import summarize as pagerange_summarize
-from src.parse_scientific_article import (
+from src.classes_and_types import (
     ScientificArticle,
     ScientificArticleText,
+    SummarizationConfiguration,
+    SummarizationMethod,
+    SummarizedScientificArticle,
     multisection_text,
     section_text,
 )
-from src.text_utils import indent, word_count
+from src.gpt3_summarization import summarize as gpt3_summarize
+from src.pagerank_summarization import summarize as pagerange_summarize
+from src.text_utils import word_count
 
 article_type = dict[str, list[str]]
 summarization_callable = Callable[[str, dict[str, Any]], str]
-
-
-class SummarizationMethod(Enum):
-    """Available summarization method."""
-
-    TEXTRANK = "TEXTRANK"
-    BART = "BART"
-    GPT3 = "GPT3"
-
-
-class SummarizationConfiguration(BaseModel):
-    """Configuration for a summarization."""
-
-    method: SummarizationMethod
-    config_kwargs: Optional[dict[str, Union[float, str, bool]]] = None
-
-
-class SummarizedScientificArticle(ScientificArticle):
-    """The results of summarizing an article."""
-
-    config: SummarizationConfiguration
-    summary: ScientificArticleText
-
-    def __str__(self) -> str:
-        """Get a string representation of the scientific article summary."""
-        msg = self.title + "\n"
-        msg += f"(url: {self.url})\n"
-        msg += "\n"
-        msg += " Original text:\n"
-        msg += indent(str(self.text))
-        msg += "\n"
-        msg += " Summarized text:\n"
-        msg += indent(str(self.summary))
-
-        return msg
-
-    def __repr__(self) -> str:
-        """Get a string representation of the scientific article summary."""
-        return str(self)
 
 
 SUMMARIZATION_CALLABLES: dict[SummarizationMethod, summarization_callable] = {

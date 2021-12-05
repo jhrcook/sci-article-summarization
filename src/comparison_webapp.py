@@ -6,8 +6,12 @@ from pathlib import Path
 import streamlit as st
 from pydantic import BaseModel
 
-from src.parse_scientific_article import multisection_text, section_text
-from src.summarize_utils import SummarizationConfiguration, SummarizedScientificArticle
+from src.classes_and_types import (
+    SummarizationConfiguration,
+    SummarizedScientificArticle,
+    multisection_text,
+    section_text,
+)
 
 
 class SummarizedScientificArticleInfo(BaseModel):
