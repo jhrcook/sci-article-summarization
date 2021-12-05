@@ -4,25 +4,24 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python=3.9.7
   - beautifulsoup4=4.10.*
   - black
   - flake8
   - huggingface_hub=0.0.*
   - isort
   - mypy=0.*
-  # - numpy=1.21.2
+  - numpy=1.21.*
   - pip
   - pycodestyle
   - pydantic=1.8.*
   - pytorch=1.10.*
   - python-dotenv
   - pyyaml
-  # - streamlit=1.2.*
+  - streamlit=1.2.*
   - tqdm=4.62.*
   - transformers=4.11.*
   - typer=0.4.*
   - openai=0.11.*
   - pip:
-    - numpy==1.21.2
-    - scipy==1.7.3
     - summa==1.2.0

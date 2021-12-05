@@ -89,12 +89,11 @@ streamlit run app.py
 ## Setup
 
 Because of the all the ML/AI libraries required for this project, I used [conda](https://docs.conda.io) to manage dependencies.
-The environment was created using the following steps (they are a bit wonky because of some requirements for running on Streamlit's platform).
+The environment was created using the following command:
 
 ```bash
-conda create --prefix ./.venv python=3.9.7
+conda create --prefix ./.venv
 conda activate ./.venv
-conda env update --prefix ./.venv --file environment.yml
 ```
 
 You need an API key to use OpenAI.
