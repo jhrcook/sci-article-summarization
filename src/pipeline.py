@@ -10,7 +10,12 @@ def get_urls() -> set[str]:
     Returns:
         set[str]: Set of URLs.
     """
-    return {"https://www.nature.com/articles/s41467-021-22125-z"}
+    return {
+        "https://www.nature.com/articles/s41467-021-22125-z",  # KRAS alleles
+        "https://www.nature.com/articles/s41467-021-26703-z",  # DL Alzheimer’s
+        "https://www.nature.com/articles/s41467-021-26788-6",  # CRISPR selection
+        "https://www.nature.com/articles/s41467-020-15552-x",  # cardio Myc
+    }
 
 
 def _textrank_pipeline_configs() -> list[SummarizationConfiguration]:

@@ -52,7 +52,11 @@ for col_idx, col in enumerate(st.columns(2)):
             options=available_methods,
             key=f"summ_method_{col_idx}",
         )
-        _article_infos = [ai for ai in article_infos if ai.method == _summ_method]
+        _article_infos = [
+            ai
+            for ai in article_infos
+            if ai.method == _summ_method and ai.title == article_title
+        ]
         _summ_config = st.selectbox(
             "Configuration",
             options=[a.config_str for a in _article_infos],
