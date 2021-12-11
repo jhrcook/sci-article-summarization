@@ -41,9 +41,10 @@ article_section = st.selectbox(
     "Choose a section of the article", options=summarized_sections
 )
 
-available_methods = list(set([a.method for a in article_infos]))
+available_methods = list(
+    set([a.method for a in article_infos if a.title == article_title])
+)
 available_methods.sort()
-
 
 for col_idx, col in enumerate(st.columns(2)):
     with col:
