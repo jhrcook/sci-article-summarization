@@ -58,10 +58,10 @@ for col_idx, col in enumerate(st.columns(2)):
             for ai in article_infos
             if ai.method == _summ_method and ai.title == article_title
         ]
+        _configs = [a.config_str for a in _article_infos]
+        _configs.sort()
         _summ_config = st.selectbox(
-            "Configuration",
-            options=[a.config_str for a in _article_infos],
-            key=f"summ_config_{col_idx}",
+            "Configuration", options=_configs, key=f"summ_config_{col_idx}"
         )
         _article_info = SummarizedScientificArticleInfo(
             title=article_title, method=_summ_method, config_str=_summ_config

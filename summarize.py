@@ -8,7 +8,7 @@ from typing import Final, Optional, Union
 
 from dotenv import load_dotenv
 from tqdm import tqdm
-from typer import Typer
+from typer import Typer, colors, secho
 
 from src.classes_and_types import (
     ScientificArticle,
@@ -49,9 +49,10 @@ def summarize_all(force: bool = False) -> None:
         get_and_parse_article(url) for url in get_urls()
     ]
     configurations = generate_configurations()
-    print(f"number of articles: {len(articles)}")
-    print(f"number of configurations: {len(configurations)}")
+    secho(f"number of articles: {len(articles)}", fg=colors.BLUE)
+    secho(f"number of configurations: {len(configurations)}", fg=colors.BLUE)
     n_iters = len(articles) * len(configurations)
+    n_summarizations_performed = 0
     for summ_config, article in tqdm(product(configurations, articles), total=n_iters):
         json_path = outdir / make_summary_file_name(
             article, summ_config, suffix=".json"
@@ -59,6 +60,8 @@ def summarize_all(force: bool = False) -> None:
         if force or not json_path.exists():
             summarized_article = summarize_article(article, config=summ_config)
             _write_summarized_article_to_json(summarized_article, json_path)
+            n_summarizations_performed += 1
+    secho(f"performed {n_summarizations_performed} summarizations")
     return None
 
 

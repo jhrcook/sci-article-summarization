@@ -20,6 +20,7 @@ class Gpt3SummarizationConfiguration(BaseModel):
     top_p: Optional[PositiveFloat] = None
     frequency_penalty: float = 0.1
     presence_penalty: float = 0.1
+    prompt: str = "Summary:"
 
 
 def _openai_api_key() -> None:
@@ -29,9 +30,9 @@ def _openai_api_key() -> None:
     return None
 
 
-def _text_to_gpt3_prompt(text: str) -> str:
+def _text_to_gpt3_prompt(text: str, prompt: str) -> str:
     prefix = 'Summarize the following scientific article:\n"""\n'
-    suffix = '\n"""\nSummary:\n"""\n'
+    suffix = '\n"""\n' + prompt + ":" + '\n"""\n'
     prompt = prefix + text + suffix
     return prompt
 
@@ -52,7 +53,7 @@ def summarize(text: str, config_kwargs: dict[str, Any]) -> str:
     """
     _openai_api_key()
     config = Gpt3SummarizationConfiguration(**config_kwargs)
-    prompt = _text_to_gpt3_prompt(text)
+    prompt = _text_to_gpt3_prompt(text=text, prompt=config.prompt)
     res = openai.Completion.create(
         prompt=prompt,
         engine=config.engine,

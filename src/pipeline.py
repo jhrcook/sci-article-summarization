@@ -12,9 +12,9 @@ def get_urls() -> set[str]:
     """
     return {
         "https://www.nature.com/articles/s41467-021-22125-z",  # KRAS alleles
-        "https://www.nature.com/articles/s41467-021-26703-z",  # DL Alzheimer’s
-        "https://www.nature.com/articles/s41467-021-26788-6",  # CRISPR selection
-        "https://www.nature.com/articles/s41467-020-15552-x",  # cardio Myc
+        # "https://www.nature.com/articles/s41467-021-26703-z",  # DL Alzheimer’s
+        # "https://www.nature.com/articles/s41467-021-26788-6",  # CRISPR selection
+        # "https://www.nature.com/articles/s41467-020-15552-x",  # cardio Myc
     }
 
 
@@ -40,6 +40,30 @@ def _bart_pipeline_configs() -> list[SummarizationConfiguration]:
     ]
 
 
+def _gpt3_pipeline_configs() -> list[SummarizationConfiguration]:
+    _method = SummarizationMethod.GPT3
+    _defaults = SummarizationConfiguration(method=_method)
+    _as_snoop_dog = SummarizationConfiguration(
+        method=_method, config_kwargs={"prompt": "Summarize as Snoop Dogg"}
+    )
+    _drunk = SummarizationConfiguration(
+        method=_method, config_kwargs={"prompt": "Drunkenly summarize"}
+    )
+    _temperatures = [0.01, 0.25, 0.5, 1.0, 2.0]
+    _diff_temps = [
+        SummarizationConfiguration(method=_method, config_kwargs={"temperature": t})
+        for t in _temperatures
+    ]
+    _freq_penalties = [
+        SummarizationConfiguration(
+            method=_method, config_kwargs={"frequency_penalty": f}
+        )
+        for f in [-1, 0, 1]
+    ]
+
+    return [_defaults, _as_snoop_dog, _drunk] + _diff_temps + _freq_penalties
+
+
 def generate_configurations() -> list[SummarizationConfiguration]:
     """Get configurations to use for the summarizations.
 
@@ -49,4 +73,5 @@ def generate_configurations() -> list[SummarizationConfiguration]:
     configs: list[SummarizationConfiguration] = []
     configs += _textrank_pipeline_configs()
     configs += _bart_pipeline_configs()
+    configs += _gpt3_pipeline_configs()
     return configs
