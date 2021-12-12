@@ -115,8 +115,10 @@ def make_examples() -> None:
         out_dir.mkdir()
 
     configs: Final[dict[SummarizationMethod, dict[str, Union[float, str, bool]]]] = {
-        SummarizationMethod.TEXTRANK: {"ratio": 0.1},
+        # SummarizationMethod.TEXTRANK: {"ratio": 0.1},
         # SummarizationMethod.BART: {"min_ratio": 0.1, "max_ratio": 0.3},
+        SummarizationMethod.T5: {"min_ratio": 0.1, "max_ratio": 0.3},
+        # SummarizationMethod.PEGASUS: {"min_ratio": 0.1, "max_ratio": 0.3},
         # SummarizationMethod.GPT3: {
         #     "temperature": 0.3,
         #     "frequency_penalty": 0.1,

@@ -2,7 +2,6 @@
 
 from typing import Any, Callable, Final, Optional
 
-from src.bart_summarization import summarize as bart_summarize
 from src.classes_and_types import (
     ScientificArticle,
     ScientificArticleText,
@@ -13,6 +12,11 @@ from src.classes_and_types import (
     section_text,
 )
 from src.gpt3_summarization import summarize as gpt3_summarize
+from src.huggingface_summarization import (
+    bart_summarize,
+    pegasus_summarize,
+    t5_summarize,
+)
 from src.pagerank_summarization import summarize as pagerange_summarize
 from src.text_utils import word_count
 
@@ -24,12 +28,16 @@ SUMMARIZATION_CALLABLES: dict[SummarizationMethod, summarization_callable] = {
     SummarizationMethod.TEXTRANK: pagerange_summarize,
     SummarizationMethod.BART: bart_summarize,
     SummarizationMethod.GPT3: gpt3_summarize,
+    SummarizationMethod.T5: t5_summarize,
+    SummarizationMethod.PEGASUS: pegasus_summarize,
 }
 
 KEEP_SECTIONS = ["Introduction", "Results", "Discussion", "Results and discussion"]
 
 SUMMARIZATION_METHOD_MAX_LENGTHS: Final[dict[SummarizationMethod, int]] = {
     SummarizationMethod.BART: 650,
+    SummarizationMethod.T5: 275,
+    SummarizationMethod.PEGASUS: 650,
     SummarizationMethod.GPT3: 650,
 }
 
@@ -101,6 +109,7 @@ def summarize_article(
     """
     method = config.method
     max_len = SUMMARIZATION_METHOD_MAX_LENGTHS.get(config.method, -1)
+    # raise BaseException(f"max_len: {max_len}")
 
     introduction_summary = _summarize_paragraphs(
         article.text.Introduction,

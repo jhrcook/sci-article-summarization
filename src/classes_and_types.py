@@ -17,6 +17,8 @@ class SummarizationMethod(Enum):
     TEXTRANK = "TEXTRANK"
     BART = "BART"
     GPT3 = "GPT3"
+    T5 = "T5"
+    PEGASUS = "PEGASUS"
 
 
 class SummarizationConfiguration(BaseModel):
